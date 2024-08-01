@@ -219,9 +219,9 @@ return {
   --     vim.g.copilot_assume_mapped = true
   --   end,
   --   keys = {
-  --     {"<C-l>", 'copilot#Accept("<CR>")', mode="i", silent = true, expr = true, replace_keycodes = false },
-  --     {"<C-j>", "copilot#Next()", mode="i", silent = true, expr = true },
-  --     {"<C-k>", "copilot#Previous()", mode="i", silent = true, expr = true },
+  --     { "<C-l>", 'copilot#Accept("<CR>")', mode = "i", silent = true, expr = true, replace_keycodes = false },
+  --     { "<C-j>", "copilot#Next()", mode = "i", silent = true, expr = true },
+  --     { "<C-k>", "copilot#Previous()", mode = "i", silent = true, expr = true },
   --   },
   -- },
   -- others
