@@ -9,6 +9,7 @@ return {
       options = {
         opt = { -- vim.opt.<key>
           wrapscan = true, -- search wrap around
+          wrap = true,
         },
         g = { -- vim.g.<key>
           -- configure global vim variables (vim.g)
