@@ -1,4 +1,25 @@
 -- if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
+--
+-- local function local_llm_streaming_handler(chunk, line, assistant_output, bufnr, winid, F)
+--   if not chunk then return assistant_output end
+--   local tail = chunk:sub(-1, -1)
+--   if tail:sub(1, 1) ~= "}" then
+--     line = line .. chunk
+--   else
+--     line = line .. chunk
+--     local status, data = pcall(vim.fn.json_decode, line)
+--     if not status or not data.message.content then return assistant_output end
+--     assistant_output = assistant_output .. data.message.content
+--     F.WriteContent(bufnr, winid, data.message.content)
+--     line = ""
+--   end
+--   return assistant_output
+-- end
+--
+-- local function local_llm_parse_handler(chunk)
+--   local assistant_output = chunk.message.content
+--   return assistant_output
+-- end
 
 return {
   -- astrocore
@@ -17,7 +38,7 @@ return {
       },
       mappings = {
         n = {
-          ["<Leader>a"] = { "ggVG<cr>", desc = "Select all" },
+          ["<Leader>v"] = { "ggVG<cr>", desc = "Select all" },
           ["<Leader><cr>"] = { "<cmd>nohl<cr>", desc = "No highlight" },
           ["<C-t>"] = { "<cmd>ToggleTerm<cr>", desc = "Toggle terminal" },
           ["<C-w>"] = { "<cmd>w!<cr>", desc = "Save" },
@@ -228,5 +249,169 @@ return {
   --     { "<C-k>", "copilot#Previous()", mode = "i", silent = true, expr = true },
   --   },
   -- },
+  -- astrocommunity.completion.copilot-lua-cmp
+  -- {
+  --   "zbirenbaum/copilot.lua",
+  --   -- cmd = "Copilot",
+  --   -- event = "InsertEnter",
+  --   config = function()
+  --     require("copilot").setup {
+  --       suggestion = {
+  --         enabled = true,
+  --         auto_trigger = true,
+  --         hide_during_completion = true,
+  --         debounce = 75,
+  --         keymap = {
+  --           accept = "<C-y>",
+  --           accept_word = "<C-o>",
+  --           accept_line = "<C-l>",
+  --           next = "<C-j>",
+  --           prev = "<C-k>",
+  --           dismiss = "<C-u>",
+  --         },
+  --       },
+  --     }
+  --   end,
+  -- },
+  -- llm
+  -- {
+  --   "Kurama622/llm.nvim",
+  --   dependencies = { "nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim" },
+  --   cmd = { "LLMSessionToggle", "LLMSelectedTextHandler", "LLMAppHandler" },
+  --   config = function()
+  --     local tools = require "llm.common.tools"
+  --     require("llm").setup {
+  --       -- [[ ollama ]]
+  --       url = "http://localhost:11434/api/chat",
+  --       model = "qwen2.5-coder",
+  --       api_type = "ollama",
+  --       fetch_key = function()
+  --         -- return vim.env.LOCAL_LLM_KEY
+  --         return ""
+  --       end,
+  --       streaming_handler = local_llm_streaming_handler,
+  --       app_handler = {
+  --         WordTranslate = {
+  --           handler = tools.flexi_handler,
+  --           prompt = "Translate the following text to Chinese, please only return the translation",
+  --           opts = {
+  --             parse_handler = local_llm_parse_handler,
+  --             exit_on_move = true,
+  --             enter_flexible_window = false,
+  --           },
+  --         },
+  --       },
+  --     }
+  --   end,
+  --   keys = {
+  --     { "<leader>ac", mode = "n", "<cmd>LLMSessionToggle<cr>" },
+  --     -- { "<leader>ts", mode = "x", "<cmd>LLMAppHandler WordTranslate<cr>" },
+  --     -- { "<leader>ae", mode = "v", "<cmd>LLMAppHandler CodeExplain<cr>" },
+  --     { "<leader>at", mode = "n", "<cmd>LLMAppHandler Translate<cr>" },
+  --     { "<leader>tc", mode = "x", "<cmd>LLMAppHandler TestCode<cr>" },
+  --     -- { "<leader>ao", mode = "x", "<cmd>LLMAppHandler OptimCompare<cr>" },
+  --     { "<leader>au", mode = "n", "<cmd>LLMAppHandler UserInfo<cr>" },
+  --     { "<leader>ag", mode = "n", "<cmd>LLMAppHandler CommitMsg<cr>" },
+  --     { "<leader>ad", mode = "v", "<cmd>LLMAppHandler DocString<cr>" },
+  --     { "<leader>ao", mode = "x", "<cmd>LLMAppHandler OptimizeCode<cr>" },
+  --     { "<leader>ae", mode = "v", "<cmd>LLMSelectedTextHandler 请解释下面这段代码<cr>" },
+  --     { "<leader>ts", mode = "x", "<cmd>LLMSelectedTextHandler 英译汉<cr>" },
+  --   },
+  -- },
+  {
+    "yetone/avante.nvim",
+    event = "VeryLazy",
+    lazy = false,
+    version = "*", -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
+    opts = {
+      -- add any opts here
+      -- openai
+      -- provider = "openai",
+      -- openai = {
+      --   endpoint = "https://api.openai.com/v1",
+      --   model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
+      --   timeout = 30000, -- timeout in milliseconds
+      --   temperature = 0, -- adjust if needed
+      --   max_tokens = 4096,
+      --   -- reasoning_effort = "high" -- only supported for reasoning models (o1, etc.)
+      -- },
+      provider = "copilot",
+      -- deepseek
+      vendors = {
+        -- deepseek
+        deepseek = {
+          __inherited_from = "openai",
+          api_key_name = "DEEPSEEK_API_KEY",
+          endpoint = "https://api.deepseek.com",
+          -- model = "deepseek-coder",
+          -- model = "deepseek-reasoner",
+          model = "deepseek-chat",
+        },
+        -- ollama
+        ollama = {
+          __inherited_from = "openai",
+          api_key_name = "",
+          endpoint = "http://localhost:11434/v1",
+          model = "qwen2.5-coder",
+        },
+        -- qwen
+        qwen = {
+          __inherited_from = "openai",
+          api_key_name = "QWEN_API_KEY",
+          endpoint = "https://dashscope.aliyuncs.com/compatible-mode/v1",
+          model = "qwen-max-latest",
+        },
+        -- vivgrid
+        vivgrid = {
+          __inherited_from = "openai",
+          api_key_name = "VIVGRID_API_KEY",
+          endpoint = "https://api.vivgrid.com/v1",
+          model = "gpt-4o",
+        },
+      },
+      --
+    },
+    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    build = "make",
+    -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "stevearc/dressing.nvim",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      --- The below dependencies are optional,
+      "echasnovski/mini.pick", -- for file_selector provider mini.pick
+      "nvim-telescope/telescope.nvim", -- for file_selector provider telescope
+      "hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
+      "ibhagwan/fzf-lua", -- for file_selector provider fzf
+      "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+      "zbirenbaum/copilot.lua", -- for providers='copilot'
+      {
+        -- support for image pasting
+        "HakonHarnes/img-clip.nvim",
+        event = "VeryLazy",
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+            -- required for Windows users
+            use_absolute_path = true,
+          },
+        },
+      },
+      {
+        -- Make sure to set this up properly if you have lazy=true
+        "MeanderingProgrammer/render-markdown.nvim",
+        opts = {
+          file_types = { "markdown", "Avante" },
+        },
+        ft = { "markdown", "Avante" },
+      },
+    },
+  },
   -- others
 }
